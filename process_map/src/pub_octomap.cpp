@@ -18,7 +18,7 @@ int main(int argc, char **argv)
 
   std::string file_path;
   if(argc<2)
-      file_path="/home/nrsl/moveit_ws/map/Octomap_Origin.bt";
+      file_path="/home/hitszwzh/semantic_slam_ws/src/map/map.bt";
   else
       file_path=argv[1];
   //publisher for the planning scene

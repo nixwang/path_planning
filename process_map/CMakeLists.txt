@@ -4,7 +4,7 @@ set (CMAKE_CXX_STANDARD 11)
 #set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set (fcl_DIR "/usr/local/lib/cmake/fcl")
 set (octomap_DIR "/usr/local/share/octomap")
-find_package(octomap 1.7 REQUIRED)
+find_package(octomap REQUIRED)
 find_package(fcl REQUIRED)
 find_package(ompl REQUIRED)
 find_package(orocos_kdl REQUIRED)
@@ -51,6 +51,7 @@ link_libraries(${OCTOMAP_LIBRARIES} ${fcl_LIBRARY_DIRS} ${OMPL_LIBRARY_DIRS} ${P
 #   ${OMPL_LIBRARIES}
 #   fcl
 #)
+
 add_executable(pub_octomap src/pub_octomap.cpp)
 
 target_link_libraries(pub_octomap
