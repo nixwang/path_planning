@@ -1,7 +1,7 @@
 <launch>
 	
 <!--When have .pcd file, use this node to convert the .pcd file to the message which type is "octomap_msgs::Octomap"-->
-	<node pkg="pcl_ros" type="pcd_to_pointcloud" name="pcd_to_pointcloud" args="/home/hitszwzh/semantic_slam_ws/src/map/car6.pcd 0.5">
+	<node pkg="pcl_ros" type="pcd_to_pointcloud" name="pcd_to_pointcloud" args="/home/hitwzh/semantic_slam_ws/src/map/car6.pcd 0.5">
                 	<param name="frame_id" type="string" value="map" />
 	</node>
 
@@ -18,6 +18,6 @@
 			<remap from="cloud_in" to="/cloud_pcd" />
 	</node>
 
-	<node pkg="path_planning" type="timed_roslaunch.sh" args="10 octomap_server octomap_saver /home/hitszwzh/semantic_slam_ws/src/map/map.bt" name="timed_roslaunch" output="screen" required="true"/>
+	<node pkg="path_planning" type="timed_roslaunch.sh" args="10 octomap_server octomap_saver /home/hitwzh/semantic_slam_ws/src/map/map.bt" name="timed_roslaunch" output="screen" required="true"/>
 
 </launch>

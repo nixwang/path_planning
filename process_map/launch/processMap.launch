@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <launch>
 
-  <node pkg="process_map" type="processPointCloud_node" name="processPointCloud_node" args="/home/hitszwzh/semantic_slam_ws/src/map/000000.pcd /home/hitszwzh/semantic_slam_ws/src/map/" output="screen" >
+  <node pkg="process_map" type="processPointCloud_node" name="processPointCloud_node" args="/home/hitwzh/semantic_slam_ws/src/map/000000.pcd /home/hitwzh/semantic_slam_ws/src/map/" output="screen" >
   </node>
 
-  <node launch-prefix="nice" pkg="rviz" type="rviz" name="rviz" args="-d /home/hitszwzh/semantic_slam_ws/src/path_planning/path_planning/conf/path_planning.rviz"/>
+  <node launch-prefix="nice" pkg="rviz" type="rviz" name="rviz" args="-d /home/hitwzh/semantic_slam_ws/src/path_planning/path_planning/conf/path_planning.rviz"/>
 
 </launch>

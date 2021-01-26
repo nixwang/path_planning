@@ -40,5 +40,5 @@ else
     shift
         echo "now running 'roslaunch $@'"
     cd /home/molmc-chy/SLAM/bin/
-    ./remove_outliers -r /home/hitszwzh/semantic_slam_ws/src/map/car6.pcd /home/hitszwzh/semantic_slam_ws/src/map/car6_o.pcd
+    ./remove_outliers -r /home/hitwzh/semantic_slam_ws/src/map/car6.pcd /home/hitwzh/semantic_slam_ws/src/map/car6_o.pcd
 fi

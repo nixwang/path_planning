@@ -1,10 +1,27 @@
-<launch>
-	
+<launch>	  
+  	<node pkg="tf" type="static_transform_publisher" name="link1_broadcaster" args="0 0 0 0 0 0 1 world odom 20" /> 
+
+  	<!-- <node pkg="tf" type="static_transform_publisher" name="link2_broadcaster" args="0 0 0 0 0 0 1 camera_rgb_optical_frame map 20" />  -->
+
 	<node pkg="path_planning" type="path_planning_node" name="path_planning_node" output="screen"/>
 
-	<node pkg="process_map" type="pub_octomap" name="pub_octomap"/>
+	<!-- <node pkg="process_map" type="pub_octomap" name="pub_octomap"/> -->
 
-        <arg name="command_args" value="-d /home/hitszwzh/semantic_slam_ws/src/path_planning/path_planning/conf/path_planning.rviz" />  
+	<arg name="command_args" value="-d /home/hitwzh/semantic_slam_ws/src/path_planning/path_planning/conf/path_planning.rviz" />  
   	<node pkg="rviz" type="rviz" name="rviz" args="$(arg command_args)"/>
 
+	<node pkg="octomap_server" type="octomap_server_node" name="octomap_server">
+		<param name="resolution" value="0.2"/>
+
+		<!-- fixed map frame (set to 'map' if SLAM or localization running!) -->
+		<param name="frame_id" type="string" value="world"/>
+
+		<!-- maximum range to integrate (speedup!) -->
+		<param name="sensor_model/max_range" value="5.0"/>
+		<param name="base_frame_id " value="base_link" type="str"/>
+
+		<!-- data source to integrate (PointCloud2) -->
+		<remap from="/cloud_in" to="/semantic_pcl/semantic_pcl"/>
+
+	</node>
 </launch>

@@ -2,11 +2,12 @@
 #define PATH_PLANNING_H
 
 #include "ros/ros.h"
-#include<ros/package.h>
+#include <ros/package.h>
 #include <octomap_msgs/Octomap.h>
 #include <octomap_msgs/conversions.h>
 #include <octomap_ros/conversions.h>
 #include <octomap/octomap.h>
+#include <octomap/ColorOcTree.h>
 #include <message_filters/subscriber.h>
 #include "visualization_msgs/Marker.h"
 #include <trajectory_msgs/MultiDOFJointTrajectory.h>

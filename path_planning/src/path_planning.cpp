@@ -18,6 +18,7 @@ public:
 	{
 		return pdef;
 	}
+
 	// construct the state space we are planning in
 	ob::StateSpacePtr space;
 
@@ -35,11 +36,36 @@ public:
 	}
 	void setStart(double x, double y, double z)
 	{
+		std::cout << "Start point set to: " << x << " " << y << " " << z << std::endl;
+		std::cout << "setStart!!" << std::endl;
 		ob::ScopedState<ob::SE3StateSpace> start(space);
 		start->setXYZ(x, y, z);
 		start->as<ob::SO3StateSpace::StateType>(1)->setIdentity();
 		pdef->clearStartStates();
+		std::cout << "setStart0!!" << std::endl;
 		pdef->addStartState(start);
+		std::cout << "setStart1!!" << std::endl;
+
+		// ob::ScopedState<ob::RealVectorStateSpace> start(space);
+		// start->values[0] = x;
+		// start->values[1] = y;
+		// start->values[2] = z;
+		// ob::State *state =  space->allocState();
+		// state->as<ob::RealVectorStateSpace::StateType>()->values = start->values;
+		// if(isStateValid(state)) // Check if the start state is valid
+		// {	
+		// 	pdef->clearStartStates();
+		// 	pdef->addStartState(start);
+		// 	// DBG("Start point set to: " << x << " " << y << " " << z);
+		// 	// return true;
+		// 	std::cout << "Start point set to: " << x << " " << y << " " << z << std::endl;
+		// }
+		// else
+		// {
+		// 	// ERROR("Start state: " << x << " " << y << " " << z << " invalid");
+		// 	// return false;
+		// 	std::cout << "Start state: " << x << " " << y << " " << z << " invalid" << std::endl;
+		// }
 	}
 	void setGoal(double x, double y, double z)
 	{
@@ -318,18 +344,24 @@ void octomapCallback(const octomap_msgs::Octomap::ConstPtr &msg, planner *planne
 	// 	temp_tree.readBinary(filename);
 	// 	fcl::OcTree* tree = new fcl::OcTree(std::shared_ptr<const octomap::OcTree>(&temp_tree));
 
+	// cout << "octomapCallback entered..." << endl;
 	// convert octree to collision object
 	octomap::OcTree *tree_oct = dynamic_cast<octomap::OcTree *>(octomap_msgs::msgToMap(*msg));
-	fcl::OcTree *tree = new fcl::OcTree(std::shared_ptr<const octomap::OcTree>(tree_oct));
+	// cout << "octomapCallback entered0..." << endl;
 
+	fcl::OcTree *tree = new fcl::OcTree(std::shared_ptr<const octomap::OcTree>(tree_oct));
+	
+	// cout << "octomapCallback entered1..." << endl;
 	// Update the octree used for collision checking
 	planner_ptr->updateMap(std::shared_ptr<fcl::CollisionGeometry>(tree));
 	planner_ptr->replan();
+	// cout << "octomapCallback entered2..." << endl;
 }
 
 void odomCb(const nav_msgs::Odometry::ConstPtr &msg, planner *planner_ptr)
 {
-	planner_ptr->setStart(msg->pose.pose.position.x, msg->pose.pose.position.y, msg->pose.pose.position.z);
+	planner_ptr->setStart(msg->pose.pose.position.x-3.36, msg->pose.pose.position.y-0.198, msg->pose.pose.position.z+0.016);
+	cout << "x:"<< msg->pose.pose.position.x-3.36 << ",y:" << msg->pose.pose.position.y-0.198 << ",z:" << msg->pose.pose.position.z+0.016 << endl;
 	planner_ptr->init_start();
 }
 
@@ -344,7 +376,7 @@ void goalCb(const geometry_msgs::PointStamped::ConstPtr &msg, planner *planner_p
 	cout << "goalCb entered..." << endl;
 	std::vector<int> pointSearchInd;
 	std::vector<float> pointSearchSqrDis;
-	pcl::PointXYZ ips;
+	pcl::PointXYZ ips;		
 	ips.x = msg->point.x;
 	ips.y = msg->point.y;
 	ips.z = msg->point.z;
@@ -355,6 +387,7 @@ void goalCb(const geometry_msgs::PointStamped::ConstPtr &msg, planner *planner_p
 	kdTree->nearestKSearch(ips, 1, pointSearchInd, pointSearchSqrDis);
 	if (pointSearchSqrDis[0] < 250.0 && pointSearchInd.size() == 1)
 	{
+		// 距离goal最近的轨迹点
 		path_n = PathCloud->points[pointSearchInd[0]];
 		//     planner_ptr->setStart(path_n.x, path_n.y, path_n.z);
 		std::cout << "!!!!!!!!!!!" << path_n.x << "  " << path_n.y << "  " << path_n.z << std::endl;
@@ -458,7 +491,8 @@ int main(int argc, char **argv)
 	ReadInitPath();
 
 	ros::Subscriber octree_sub = n.subscribe<octomap_msgs::Octomap>("/octomap_binary", 1, boost::bind(&octomapCallback, _1, &planner_object));
-	ros::Subscriber odom_sub = n.subscribe<nav_msgs::Odometry>("/bebop2/odometry_sensor1/odometry", 1, boost::bind(&odomCb, _1, &planner_object));
+	// ros::Subscriber octree_sub = n.subscribe<octomap_msgs::Octomap>("/octomap_full", 1, boost::bind(&octomapCallback, _1, &planner_object));
+	ros::Subscriber odom_sub = n.subscribe<nav_msgs::Odometry>("/ground_truth/feedback", 1, boost::bind(&odomCb, _1, &planner_object));
 	ros::Subscriber goal_sub = n.subscribe<geometry_msgs::PointStamped>("/clicked_point", 1, boost::bind(&goalCb, _1, &planner_object));
 	// ros::Subscriber start_sub = n.subscribe<geometry_msgs::PointStamped>("/start/clicked_point", 1, boost::bind(&goalCb, _1, &planner_object));
 

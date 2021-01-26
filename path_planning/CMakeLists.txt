@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 
 set (fcl_DIR "/usr/local/lib/cmake/fcl")
-set (octomap_DIR "/home/nrsl/MyApps/octomap-1.7.2/lib/cmake/octomap")
+set (ompl_DIR "/usr/include/ompl")
+# set (octomap_DIR "/home/nrsl/MyApps/octomap-1.7.2/lib/cmake/octomap")
 
 project(path_planning)
 set (CMAKE_CXX_STANDARD 11)
