@@ -41,7 +41,9 @@ void RRT3D::deleteNodes(Node *root)
 Node* RRT3D::getRandomNotObstacleNode()
 {
     octomap::point3d rand_point;
-    // std::cout<<"enter run 0.0" << map_->getResolution() <<std::endl;
+    std::cout<<"enter run " << map_->getBBXMax().x() <<std::endl;
+    std::cout<<"enter run " << map_->getBBXMax().y() <<std::endl;
+    std::cout<<"enter run " << map_->getBBXMax().z() <<std::endl;
     short x_max = map_->getBBXMax().x()/ map_->getResolution();
     // std::cout<<"enter run 0.1" <<std::endl;
     short y_max = map_->getBBXMax().y()/ map_->getResolution();
@@ -51,6 +53,7 @@ Node* RRT3D::getRandomNotObstacleNode()
         rand_point = octomap::point3d(rand()%x_max*map_->getResolution(),
                                      rand()%y_max*map_->getResolution(),
                                      rand()%z_max*map_->getResolution());
+        cout <<"rand_point:" << rand_point.x() << " " << rand_point.y() << " " <<  rand_point.z() << endl;
 
     }while(map_->isObstacle(rand_point));
     Node *rand_node = new Node;
@@ -148,22 +151,21 @@ bool RRT3D::isArrived()
     return false;
 }
 
-void RRT3D::run(bool debug)
+bool RRT3D::run(bool debug)
 {
     srand(static_cast<ushort>(time(NULL)));
     std::chrono::time_point<std::chrono::system_clock> start, end;
     start = std::chrono::system_clock::now();
 
+    // Node *q_rand = getRandomNotObstacleNode();
+
     for(int i=0; i<max_iter_; i++){
         if(debug)
             if(i%100==0)
                 std::cout<<"i="<<i<<std::endl;
-        // std::cout<<"enter run 0" <<std::endl;
         Node *q_rand = getRandomNotObstacleNode();
-        // std::cout<<"enter run 1" <<std::endl;
 //        std::cout<<"random_point: "<<q_rand->position<<std::endl;
         Node *q_nearest = findNearestNode(q_rand->position);
-        // std::cout<<"enter run 2" <<std::endl;
 //        std::cout<<"nearest_node: "<<q_nearest->position<<std::endl;
         octomap::point3d direction = q_rand->position - q_nearest->position;
         // std::cout<<"enter run 3" <<std::endl;
@@ -195,6 +197,8 @@ void RRT3D::run(bool debug)
         path_.push_back(q);
         q = q->parent;
     }
+
+    return true;
 }
 
 void RRT3D::writeMap()

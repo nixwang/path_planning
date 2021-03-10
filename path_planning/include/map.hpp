@@ -16,13 +16,13 @@
 
 class Map{
 public:
-    Map(float resolution, octomap::point3d bbx_max, octomap::point3d bbx_min);
-    Map(std::string file_name);
-    Map(const octomap_msgs::Octomap& msg);
+    // Map(float resolution, octomap::point3d bbx_max, octomap::point3d bbx_min);
+    // Map(std::string file_name);
+    // Map(const octomap_msgs::Octomap& msg);
     Map(const octomap_msgs::Octomap& msg, bool color_);
     ~Map();
     bool isObstacle(octomap::point3d point);
-    double getResolution(){ return map_color_tree_->getResolution();}
+    double getResolution(){ return map_tree_->getResolution();}
     octomap::point3d getBBXMax(){ return bbx_max_; }
     octomap::point3d getBBXMin(){ return bbx_min_; }
     void mixPathMap(octomap::point3d point, bool is_occupied);
@@ -30,9 +30,9 @@ public:
 
 
 private:    
-    octomap::ColorOcTree* map_color_tree_;
+    octomap::ColorOcTree* map_tree_;
 
-    octomap::OcTree* map_tree_;
+    // octomap::OcTree* map_tree_;
 
     float resolution_;
     octomap::point3d bbx_max_;

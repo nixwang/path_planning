@@ -37,7 +37,7 @@ public:
     bool isArrived();
     double compute_gain(Node *q_new);
     
-    void run(bool debug);
+    bool run(bool debug);
     void writeMap();
     void writeInfo2File(std::string output_name);
 private:

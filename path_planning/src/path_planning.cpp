@@ -63,37 +63,40 @@ ros::Publisher vis_pub;
 ros::Publisher traj_pub;
 
 point3d start_position(0,0,0);
-point3d end_position(1,1,0);
+point3d end_position(2,2,0);
 double init_gain = 0;
-int max_iterator_ = 60000;
-int step_size_global = 0.5;
+int max_iterator_ = 1;
+int step_size_global = 1;
+bool rrt_done = true;
 
 void octomapCallback(const octomap_msgs::Octomap::ConstPtr &msg)
 {
-
-	std::cout << "entered octomapCallback..." << std::endl;
-
 	// octomap::ColorOcTree* cot = octomap_msgs::msgToMap(msg);
 
-	bool color_ = false;
-	Map* map = new Map(*msg, color_);
-	// cout << map->getBBXMax().x() << endl;
-	// cout << map->getResolution() << endl;
+	if(rrt_done){
+		std::cout << "entered octomapCallback..." << std::endl;
 
-	// octomap::point3d start_position(0,0,0);
-	// octomap::point3d end_position(39,20,9);
+		rrt_done = false;
+		bool color_ = false;
+		Map* map = new Map(*msg, color_);
+		// cout << map->getBBXMax().x() << endl;
+		// cout << map->getResolution() << endl;
 
-	cout << start_position.x() << " " << start_position.y() << " " <<  start_position.z() << endl;
-    // octomap::point3d end_position(39,20,9);
-    RRT3D rrt(start_position, end_position, map, max_iterator_, step_size_global);
-    rrt.run(false);
-    // rrt.writeMap();
-    // // map->writeFile("./path_octotree.bt");
+		// octomap::point3d start_position(0,0,0);
+		// octomap::point3d end_position(39,20,9);
 
-	// std::cout << "rrt running..." << std::endl;
+		cout << start_position.x() << " " << start_position.y() << " " <<  start_position.z() << endl;
+		// octomap::point3d end_position(39,20,9);
+		RRT3D rrt(start_position, end_position, map, max_iterator_, step_size_global);
+		rrt_done = rrt.run(false);
+		// rrt.writeMap();
+		// // map->writeFile("./path_octotree.bt");
 
-    // rrt.writeInfo2File("/home/hitwzh/semantic_slam_ws/src/path_planning/path/path_distance.txt");
+		// std::cout << "rrt running..." << std::endl;
 
+		// rrt.writeInfo2File("/home/hitwzh/semantic_slam_ws/src/path_planning/path/path_distance.txt");
+	}
+	
 }
 
 void odomCb(const nav_msgs::Odometry::ConstPtr &msg)
