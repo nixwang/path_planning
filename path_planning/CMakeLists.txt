@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 
 set (fcl_DIR "/usr/local/lib/cmake/fcl")
-set (ompl_DIR "/usr/include/ompl")
+set (ompl_DIR "/usr/local/include/ompl")
+# set (pcl_DIR "/usr/local/include/pcl-1.11/pcl")
 # set (octomap_DIR "/home/nrsl/MyApps/octomap-1.7.2/lib/cmake/octomap")
 
 project(path_planning)
@@ -11,7 +12,10 @@ find_package(octomap 1.7 REQUIRED)
 find_package(fcl REQUIRED)
 find_package(ompl REQUIRED)
 
+# find_package(pcl 1.11 REQUIRED)
+
 find_package(catkin REQUIRED COMPONENTS
+  octomap
   octomap_msgs
   octomap_ros
   pcl_conversions
@@ -24,8 +28,10 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES path_planning
   CATKIN_DEPENDS octomap_msgs octomap_ros pcl_conversions pcl_ros roscpp std_msgs
-#  DEPENDS octomap PCL
+  # DEPENDS octomap PCL
 )
+
+include_directories("/usr/local/include/ompl/")
 
 include_directories(
   ${PROJECT_SOURCE_DIR}/include
@@ -39,7 +45,14 @@ include_directories(
 
 link_libraries(${OCTOMAP_LIBRARIES} ${fcl_LIBRARY_DIRS} ${OMPL_LIBRARY_DIRS})
 
-add_executable(${PROJECT_NAME}_node src/path_planning.cpp)
+# add_executable(${PROJECT_NAME}_node src/path_planning.cpp)
+AUX_SOURCE_DIRECTORY(src DIR_SRCS)
+
+SET(TEST_MATH
+${DIR_SRCS}
+)
+
+ADD_EXECUTABLE(${PROJECT_NAME}_node ${TEST_MATH})
 
 target_link_libraries(${PROJECT_NAME}_node
    ${catkin_LIBRARIES}
