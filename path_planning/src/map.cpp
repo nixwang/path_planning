@@ -5,6 +5,9 @@
 //  Created by Daxin Wang on 2018/7/16.
 //  Copyright © 2018 Daxin Wang. All rights reserved.
 //
+#include <ros/ros.h>
+#include <ros/console.h>
+#include <log4cxx/logger.h>
 
 #include "../include/map.hpp"
 
@@ -84,8 +87,23 @@ Map::Map(const octomap_msgs::Octomap& msg, bool color_)
 	// }
     // cout << count << endl;
 
-    bbx_max_ = octomap::point3d(50,50,10);
-    bbx_min_ = octomap::point3d(0,0,0);
+    // double max_x,max_y,max_z;
+    // double min_x,min_y,min_z;
+    // map_tree_->getMetricMax(max_x,max_y,max_z);
+    // cout<<max_x<<" "<<max_y<<" "<<max_z<<endl;
+    // map_tree_->getMetricMin(min_x,min_y,min_z);
+    // cout<<min_x<<" "<<min_y<<" "<<min_z<<endl;
+    // octomap::point3d max_p(max_x, max_y, max_z);
+    // octomap::point3d min_p(min_x, min_y, min_z);
+    // cout<<max_p.x()<<" "<<max_p.y()<<" "<<max_p.z()<<endl;
+    // map_tree_->setBBXMax(max_p);
+    // map_tree_->setBBXMin(min_p);
+
+    // 5 0.6 2.6
+    // -0.2 0 -2.6
+
+    bbx_max_ = octomap::point3d(50,1,50);
+    bbx_min_ = octomap::point3d(-50,-1,-50);
     map_tree_->setBBXMax(bbx_max_);
     map_tree_->setBBXMin(bbx_min_);
 }
@@ -97,12 +115,68 @@ Map::~Map()
 bool Map::isObstacle(octomap::point3d point)
 {
     //to do
-    octomap::OcTreeNode* node = map_tree_->search(point);
+    octomap::ColorOcTreeNode* node = map_tree_->search(point);
     if(node!=NULL && node->getOccupancy()>0.5){
+        cout << "searched node Occupancy" << node->getOccupancy() << endl;
+
+        cout << "searched node color" << node->getColor() << endl;
         return true;
     }
     return false;
 }
+
+bool Map::isInfeatureless(octomap::point3d point)
+{
+    double y_s = point.y();
+    for(int i = 0; i <= 5; ++i){
+        double y_hight = i*0.2 + 0.1;
+
+        point.y() = y_hight;
+        octomap::ColorOcTreeNode* node = map_tree_->search(point);
+    
+        if(node!=NULL && node->getOccupancy()>0.5){
+            ROS_WARN("searched node position: %f %f %f", point.x(), point.y(), point.z());
+            ROS_WARN("q_new_gain_color: %d %d %d", node->getColor().r,node->getColor().g, node->getColor().b);
+
+            if((node->getColor().r == 255) && (node->getColor().g == 255) && (node->getColor().b == 255)){
+                continue;
+            }
+
+            if((node->getColor().r <=(61+5)) && (node->getColor().r >= (61-5)) && (node->getColor().g <=(230+5)) && (node->getColor().g >= (230-5)) && (node->getColor().b <=(250+5)) && (node->getColor().b >= (250-5))){
+                ////// 在无效定位区域内，则增益为1000.因为最后最优增益是求最小值
+                ROS_ERROR("Invalid area!!!");
+                // gain = -100;
+                point.y() = y_s;
+                return true;
+            }
+            else{
+                ///// todo: 不在无效定位区域内，则计算距离
+                // gain = 50;
+                point.y() = y_s;
+                return false;
+            }
+
+            // if(node->getColor())
+            break;
+        }
+    }
+
+    /***可用来表征未建图区域**********************************************/
+    point.y() = y_s;
+    return false;     // 若在未知区域，返回0
+}
+
+// ColorOcTreeNode::Color Map::getcolor(octomap::point3d point)
+// {
+//     //to do
+//     octomap::ColorOcTreeNode* node = map_tree_->search(point);
+//     if(node!=NULL){
+//         return node->getColor();
+//     }
+//     // return false;
+// }
+
+
 void Map::mixPathMap(octomap::point3d point, bool is_occupied)
 {
     map_tree_->updateNode(point, is_occupied);

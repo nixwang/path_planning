@@ -36,19 +36,27 @@ public:
     bool isNewNodeCollision(octomap::point3d q_new, octomap::point3d q_nearest, octomap::point3d direction);
     bool isArrived();
     double compute_gain(Node *q_new);
+    double border_gain(Node *q_new);
+    void deleteAllNodes(Node *root);
+    void deleteNode(Node *root);
+
     
-    bool run(bool debug);
+    bool run();
     void writeMap();
     void writeInfo2File(std::string output_name);
+
+    vector<Node *> path_;
 private:
     vector<Node *> nodes_;
-    vector<Node *> path_;
+    // vector<Node *> path_;
     Node *root_;
     Node *lastNode_;
     octomap::point3d start_position_;
     octomap::point3d end_position_;
     // double gain_;
-    
+    double bestGain_;
+    Node *bestNode_;
+
     Map *map_;
     
     int max_iter_;
